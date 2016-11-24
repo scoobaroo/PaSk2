@@ -34,11 +34,10 @@ public class Board extends JPanel implements ActionListener {
     private int frame;
     private int logCycle;
 
-    GWModel gameWorld; // GameWorld model
-    GWView gameWorldView; // GameWorld view
+    GWModel gameWorld; // gameWorld model
+    GWView gameWorldView; // gameWorld view
 
-    PSysModel pSystem; // Particle system model
-    PSysView pSysView; // Particle system view
+    Image botImg = null;
 
     public Board(int bw, int bh, ArrayList <String> pl) {
 
@@ -66,14 +65,19 @@ public class Board extends JPanel implements ActionListener {
     @Override
 	public void actionPerformed(ActionEvent e) {
 
-	if (frame % 30 == 0) {
+	if (frame % 50 == 0) {
 	    System.out.println("Frame: " + frame);
 	    gameWorld.orientBots(); // point bots toward player
+	}
+	if (frame % 500 == 0 && frame > 0) {
+	    // add bot at center of screen
+	    gameWorld.addBot((int) (.04*bdWidth), bdWidth/2, bdHeight/2, 0, 0,
+			     botImg);
 	}
 	frame++;
 	// all simulation state change code should be wrapped here
 	if (frame == logCycle) {
-	    pSysView.dump(pSystem, logCycle);
+	    //pSysView.dump(pSystem, logCycle);
 	}
 	update();
         repaint();
@@ -92,39 +96,35 @@ public class Board extends JPanel implements ActionListener {
 
     private void update() {
 	gameWorld.update(bdWidth, bdHeight);
-	pSystem.update(bdWidth, bdHeight);
     }
 
     private void doDrawing(Graphics g) {
 	gameWorldView.draw(gameWorld, g);
-	pSysView.draw(pSystem, g);
-	Graphics2D g2d = (Graphics2D) g;
     }
 
     private class TAdapter extends KeyAdapter {
 
+	// pass keystrokes to gameWorld
         @Override
 	    public void keyReleased(KeyEvent e) {
-            //when key is released, run this code
 	    gameWorld.keyReleased(e);
         }
 
         @Override
 	    public void keyPressed(KeyEvent e) {
-            //when key is pressed, run this code
 	    gameWorld.keyPressed(e);
         }
     }
 
     void setupPS(ArrayList <String> pl) {
+
 	logCycle = Integer.parseInt(pl.get(0));
 	System.out.println("Log: " + logCycle);
 
 	gameWorld = new GWModel();
-	pSystem = new PSysModel();
 
 	Image img = null;
-	img = getImage("../Images/Bot.jpg");
+	botImg = getImage("../Images/Bot.jpg");
 
 	for (int i=1; i<pl.size(); i++) {
 	    String [] tokens = pl.get(i).split(" ");
@@ -141,12 +141,10 @@ public class Board extends JPanel implements ActionListener {
 	    int nvy = (int) (Double.parseDouble(tokens[4]) * bdHeight);
 
 	    // add bot to gameWorld
-	    if (img != null) {
-		Image sImg = img.getScaledInstance(rad*2, rad*2, Image.SCALE_DEFAULT);
+	    if (botImg != null) {
+		Image sImg = botImg.getScaledInstance(rad*2, rad*2, Image.SCALE_DEFAULT);
 		gameWorld.addBot(rad, npx, npy, nvx, nvy, sImg);
 	    }
-
-	    pSystem.add(rad, npx, npy, nvx, nvy);
 
 	}
 
@@ -167,9 +165,15 @@ public class Board extends JPanel implements ActionListener {
 	    gameWorld.addGraveStone(img);
 	}
 
-	gameWorldView = new GWView();
-	pSysView = new PSysView();
+	// add image of projectile to gameWorld
+	img = getImage("../Images/Blur.jpg");
+	if (img != null) {
+	    Image pImg = img.getScaledInstance(20, 20,
+					       Image.SCALE_DEFAULT);
+	    gameWorld.addProjectileImg(pImg);
+	}
 
+	gameWorldView = new GWView();
     }
 
     // Image getImage(String fp)

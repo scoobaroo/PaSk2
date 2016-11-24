@@ -18,6 +18,7 @@ public class Sprite extends Particle{
     // nx, ny: position (x, y)
     // vx, vy: velocity (x, y)
     // img: image to display
+    
     Sprite(int r, int nx, int ny, int vx, int vy, Image img) {
     	initSprite(r, nx, ny, vx, vy, img);
     }
