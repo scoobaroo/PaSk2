@@ -29,6 +29,8 @@ public class Sprite extends Particle{
     }
 
     void draw(Graphics2D g) {
+        int bdWidth = 400;
+        int bdHeight = 300;
     	w=bdWidth/2;
     	h=bdHeight/2;
     	x=0;
