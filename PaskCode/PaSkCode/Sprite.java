@@ -31,8 +31,8 @@ public class Sprite extends Particle{
     void draw(Graphics2D g) {
         int bdWidth = 400;
         int bdHeight = 300;
-    	w=bdWidth/2;
-    	h=bdHeight/2;
+    	int w=bdWidth/2;
+    	int h=bdHeight/2;
     	x=0;
     	y=0;
     	g.drawImage(image, x, y, w, h, null); 
